@@ -23,6 +23,12 @@ public class AnimalApi {
         this.animalService = animalService;
     }
 
+    /**
+     * Método que vai permitir ao cliente (quem chama) solicitar o cadastro (insersão no bd) de um
+     * novo registro de "animal"
+     * @param cadastrarAnimalRequest
+     * @return o identificador do animal salvo
+     */
     @PostMapping
     public CadastrarAnimalResponse cadastrar(@RequestBody @Valid CadastrarAnimalRequest cadastrarAnimalRequest){
         Animal animal = AnimalMapper.map(cadastrarAnimalRequest);
@@ -30,11 +36,36 @@ public class AnimalApi {
         return AnimalMapper.map(animal);
     }
 
+    /**
+     * Permite ao cliente deletar o registro de um animal
+     * @param id
+     */
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable String id){
         animalService.deletarPorId(id);
     }
 
+    /**
+     * Permite solicitar a atualização parcial de um registro existente
+     * @param atualizarAnimalRequest
+     * @return
+     */
+    @PatchMapping
+    public ResponseEntity<?> atualizarEspecificamente(@RequestBody @Valid AtualizarAnimalRequest atualizarAnimalRequest){
+        try{
+            Animal animal = AnimalMapper.map(atualizarAnimalRequest);
+            animalService.atualizarEspecificamente(animal);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }  catch (AnimalNaoEncontradoException e){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    /**
+     * Permite atualizar o registro na totalidade
+     * @param atualizarAnimalRequest
+     * @return
+     */
     @PutMapping
     public ResponseEntity<?> atualizar(@RequestBody @Valid AtualizarAnimalRequest atualizarAnimalRequest){
         try{
@@ -46,6 +77,11 @@ public class AnimalApi {
         }
     }
 
+    /**
+     * Permite buscar os dados de um registro por id
+     * @param id
+     * @return
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPorId(@PathVariable String id){
         try{
@@ -55,6 +91,10 @@ public class AnimalApi {
         }
     }
 
+    /**
+     * Retorna a lista de animais registrados na base de dados
+     * @return
+     */
     @GetMapping
     public List<Animal> buscarTodos(){
         return animalService.buscarTodos();
