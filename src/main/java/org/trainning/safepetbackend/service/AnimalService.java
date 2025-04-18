@@ -30,19 +30,17 @@ public class AnimalService {
         return this.animalRepository.findAll();
     }
 
-    public Animal atualizar(Animal animal) {
+    public void atualizar(Animal animal) {
 
-        Animal animalBD = animalRepository.findById(animal.getId()).get();
-
-        if(null == animalBD){
-            throw new AnimalNaoEncontradoException();
-        }
-
-
-
+        Animal animalBD = animalRepository.findById(animal.getId())
                 .orElseThrow(AnimalNaoEncontradoException::new);
         animal.setCadastradoEm(animalBD.getCadastradoEm());
-        return this.animalRepository.save(animal);
+        this.animalRepository.save(animal);
+    }
+
+    public void atualizarEspecificamente(Animal animal){
+       Animal updatedAnimal =  this.animalRepository.updateByExample(animal);
+       if(null == updatedAnimal) throw new AnimalNaoEncontradoException();
     }
 
     public void deletarPorId(String id) {
